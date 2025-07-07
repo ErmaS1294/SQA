@@ -5,6 +5,9 @@ import plotly.io as pio
 import base64
 from fpdf import FPDF
 
+# Pastikan kaleido sudah ada di requirements.txt!
+# pip install kaleido
+
 # --- CSS Tampilan ---
 st.markdown("""
     <style>
@@ -146,10 +149,9 @@ Rekomendasi    : {rekomendasi}
                      title="Grafik Penilaian SQA")
         st.plotly_chart(fig)
 
-        # --- Simpan grafik & encode Base64 ---
-        pio.write_image(fig, "grafik_sqa.png")
-        with open("grafik_sqa.png", "rb") as img_file:
-            img_base64 = base64.b64encode(img_file.read()).decode()
+        # --- Simpan grafik ke base64 TANPA tulis file ---
+        img_bytes = fig.to_image(format="png")  # Perlu kaleido
+        img_base64 = base64.b64encode(img_bytes).decode()
 
         # --- PDF dengan fpdf ---
         pdf = FPDF()
@@ -168,8 +170,10 @@ Rekomendasi    : {rekomendasi}
         pdf_file = "Hasil_SQA.pdf"
         pdf.output(pdf_file)
 
-        # --- Link Download ---
         with open(pdf_file, "rb") as f:
             b64 = base64.b64encode(f.read()).decode()
         href = f'<a href="data:application/octet-stream;base64,{b64}" download="{pdf_file}">📥 Download PDF</a>'
         st.markdown(href, unsafe_allow_html=True)
+
+        # --- Tampilkan grafik inline dengan base64 di HTML (opsional) ---
+        st.markdown(f'<div class="grafik"><img src="data:image/png;base64,{img_base64}" width="600"/></div>', unsafe_allow_html=True)
