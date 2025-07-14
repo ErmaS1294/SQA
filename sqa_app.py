@@ -203,3 +203,19 @@ if st.button("Lihat Hasil Penilaian"):
         </body>
         </html>
         """
+        # Fungsi untuk konversi HTML ke PDF (xhtml2pdf)
+        def convert_html_to_pdf(source_html):
+            output = BytesIO()
+            pisa_status = pisa.CreatePDF(source_html, dest=output)
+            return output if not pisa_status.err else None
+
+        pdf_output = convert_html_to_pdf(html_content)
+
+        if pdf_output:
+            b64_pdf = base64.b64encode(pdf_output.getvalue()).decode("utf-8")
+            safe_name = re.sub(r'\W+', '_', nama)
+            filename = f"Hasil_SQA_{aplikasi}_{safe_name}.pdf"
+            download_link = f'<a href="data:application/octet-stream;base64,{b64_pdf}" download="{filename}">📥 Download Hasil Penilaian PDF</a>'
+            st.markdown(download_link, unsafe_allow_html=True)
+        else:
+            st.error("Gagal membuat PDF. Coba lagi nanti.")
