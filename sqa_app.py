@@ -201,15 +201,25 @@ if st.button("Lihat Hasil Penilaian"):
         </html>
         """
 
-        # Simpan ke HTML & konversi ke PDF
-        with open("hasil_sqa.html", "w", encoding="utf-8") as f:
-            f.write(html_content)
+from xhtml2pdf import pisa
 
-        HTML("hasil_sqa.html").write_pdf("Hasil_SQA.pdf")
+def convert_html_to_pdf(source_html: str, output_filename: str):
+    with open(output_filename, "w+b") as result_file:
+        pisa_status = pisa.CreatePDF(src=source_html, dest=result_file)
+    return not pisa_status.err  # True jika sukses
 
-        # Tampilkan tombol download PDF
-        with open("Hasil_SQA.pdf", "rb") as f:
-            pdf_bytes = f.read()
-        b64_pdf = base64.b64encode(pdf_bytes).decode()
-        href = f'<a href="data:application/octet-stream;base64,{b64_pdf}" download="Hasil_SQA_{aplikasi}_{nama}.pdf">📥 Download Hasil Penilaian PDF</a>'
-        st.markdown(href, unsafe_allow_html=True)
+# Simpan HTML ke file
+with open("hasil_sqa.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+# Konversi HTML ke PDF
+success = convert_html_to_pdf(html_content, "Hasil_SQA.pdf")
+
+if success:
+    with open("Hasil_SQA.pdf", "rb") as f:
+        pdf_bytes = f.read()
+    b64_pdf = base64.b64encode(pdf_bytes).decode()
+    href = f'<a href="data:application/octet-stream;base64,{b64_pdf}" download="Hasil_SQA_{aplikasi}_{nama}.pdf">📥 Download Hasil Penilaian PDF</a>'
+    st.markdown(href, unsafe_allow_html=True)
+else:
+    st.error("❌ Gagal membuat PDF. Pastikan konten HTML valid.")
