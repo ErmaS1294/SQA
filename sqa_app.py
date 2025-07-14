@@ -182,3 +182,24 @@ if st.button("Lihat Hasil Penilaian"):
             <p><strong>Usia:</strong> {usia} tahun</p>
             <p><strong>Aplikasi:</strong> {aplikasi}</p>
             <p><strong>Durasi Penggunaan:</strong
+               </div>
+
+        <h2>Hasil Penilaian</h2>
+        <div class="info">
+            <p><strong>Skor Rata-rata:</strong> {rata_rata:.2f}</p>
+            <p><strong>Status:</strong> {status}</p>
+            <p><strong>Rekomendasi:</strong> {rekomendasi}</p>
+        </div>
+
+        <h2>Rincian Jawaban</h2>
+        <div class="info">
+            {html_detail}
+        </div>
+
+        <h2>Grafik</h2>
+        <div class="grafik">
+            <img src="data:image/png;base64,{img_base64}" width="500"/>
+        </div>
+        </body>
+        </html>
+        """
