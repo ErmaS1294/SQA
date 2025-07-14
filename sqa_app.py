@@ -28,11 +28,11 @@ st.markdown("""
             background-color: #27ae60;
         }
 
-       body {
-        font-family: Arial, sans-serif;
-        margin: 20px 40px;  /* margin atas bawah 20px, kiri kanan 40px */
-        line-height: 1.2;    /* spasi antar baris rapat */
-        font-size: 12pt;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px 40px;
+            line-height: 1.2;
+            font-size: 12pt;
         }
         h1, h2 {
             text-align: center;
