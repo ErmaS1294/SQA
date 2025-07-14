@@ -4,4 +4,8 @@ plotly==6.2.0
 streamlit==1.46.1
 fpdf
 kaleido
+streamlit
+pandas
+plotly
+weasyprint
 
