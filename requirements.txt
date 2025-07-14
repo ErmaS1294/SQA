@@ -8,4 +8,4 @@ streamlit
 pandas
 plotly
 weasyprint
-
+xhtml2pdf
