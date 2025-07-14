@@ -1,39 +1,39 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import plotly.io as pio
+import matplotlib.pyplot as plt
 import base64
-import platform
-import re
 from io import BytesIO
 from xhtml2pdf import pisa
+import re
 
-# --- CSS Tampilan ---
+# --- Styling ---
 st.markdown("""
     <style>
         .main { background-color: #f0f2f6; }
         h1 { color: #2c3e50; }
-        h2 { color: #34495e; }
+        .judul {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
         .stButton>button {
             background-color: #2ecc71;
             color: white;
-            border: none;
             border-radius: 8px;
             padding: 10px 20px;
-            margin-top: 20px;
         }
         .stButton>button:hover {
             background-color: #27ae60;
         }
-        .stSlider { margin-bottom: 25px; }
-        .judul { font-size: 28px; font-weight: bold; color: #2c3e50; text-align: center; margin-bottom: 30px; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- Judul ---
 st.markdown('<div class="judul">Penilaian Software Quality Assurance (SQA) - ISO 9126</div>', unsafe_allow_html=True)
 
-# --- Informasi Pengisi ---
+# --- Data Responden ---
 st.subheader("Data Responden")
 col1, col2 = st.columns(2)
 with col1:
@@ -43,16 +43,13 @@ with col2:
 
 col3, col4 = st.columns(2)
 with col3:
-    aplikasi = st.selectbox(
-        "Pilih Nama Aplikasi",
-        ["Tokopedia", "Shopee", "Lazada", "Blibli", "GoJek", "Grab", "Traveloka", "Agoda", "Tiktok"]
-    )
+    aplikasi = st.selectbox("Pilih Nama Aplikasi", ["Tokopedia", "Shopee", "Lazada", "Blibli", "GoJek", "Grab", "Traveloka", "Agoda", "Tiktok"])
 with col4:
-    durasi = st.text_input("Sudah menggunakan berapa lama ? (bulan)")
+    durasi = st.number_input("Sudah menggunakan berapa lama? (bulan)", min_value=1, max_value=240, step=1)
 
 st.markdown("---")
 
-# --- Pertanyaan SQA ---
+# --- Fungsi dan Pertanyaan ---
 def section(title):
     st.markdown(f'<h2>{title}</h2>', unsafe_allow_html=True)
 
@@ -65,52 +62,53 @@ def add_slider(label):
     scores.append(score)
     return score
 
-section("1️⃣ FUNCTIONALITY (Fungsionalitas)")
+# --- Pertanyaan per Aspek ---
+section("1️⃣ FUNCTIONALITY")
 add_slider("Apakah fitur-fitur aplikasi sesuai dengan kebutuhan Anda sehari-hari?")
 add_slider("Apakah fungsi utama aplikasi berjalan dengan benar tanpa error?")
 add_slider("Apakah aplikasi memiliki fitur keamanan yang memadai (login, OTP, enkripsi)?")
 add_slider("Apakah integrasi antar fitur (pembayaran, notifikasi, chat) berjalan dengan baik?")
 add_slider("Apakah aplikasi memberikan informasi atau output yang akurat?")
 
-section("2️⃣ RELIABILITY (Keandalan)")
+section("2️⃣ RELIABILITY")
 add_slider("Apakah aplikasi jarang mengalami error, hang, atau crash?")
 add_slider("Apakah aplikasi tetap stabil digunakan dalam waktu lama?")
-add_slider("Apakah aplikasi tetap berfungsi baik saat beban tinggi (misalnya saat promo besar)?")
+add_slider("Apakah aplikasi tetap berfungsi baik saat beban tinggi?")
 add_slider("Apakah aplikasi cepat pulih jika terjadi gangguan sistem?")
 add_slider("Apakah data pengguna tetap aman saat terjadi gangguan?")
 
-section("3️⃣ USABILITY (Kemudahan Penggunaan)")
+section("3️⃣ USABILITY")
 add_slider("Apakah tampilan antarmuka aplikasi mudah dipahami oleh pengguna baru?")
 add_slider("Apakah navigasi menu jelas, konsisten, dan tidak membingungkan?")
-add_slider("Apakah ukuran font, warna, ikon mudah dibaca di berbagai kondisi?")
+add_slider("Apakah ukuran font, warna, ikon mudah dibaca?")
 add_slider("Apakah Anda merasa nyaman menggunakan aplikasi dalam waktu lama?")
-add_slider("Apakah aplikasi menyediakan panduan/pusat bantuan jika pengguna mengalami kesulitan?")
+add_slider("Apakah aplikasi menyediakan panduan/pusat bantuan jika mengalami kesulitan?")
 
-section("4️⃣ EFFICIENCY (Efisiensi Kinerja)")
+section("4️⃣ EFFICIENCY")
 add_slider("Apakah aplikasi cepat dibuka dan tidak lambat saat digunakan?")
 add_slider("Apakah konsumsi baterai aplikasi relatif hemat?")
-add_slider("Apakah aplikasi tidak terlalu banyak menggunakan kuota data internet?")
-add_slider("Apakah aplikasi tetap berjalan baik di perangkat dengan spesifikasi rendah?")
+add_slider("Apakah aplikasi tidak terlalu banyak menggunakan kuota data?")
+add_slider("Apakah aplikasi tetap berjalan baik di perangkat spesifikasi rendah?")
 add_slider("Apakah respon aplikasi tetap cepat meski digunakan bersama aplikasi lain?")
 
-section("5️⃣ MAINTAINABILITY (Pemeliharaan)")
-add_slider("Apakah aplikasi rutin diperbarui untuk memperbaiki bug atau menambah fitur baru?")
-add_slider("Apakah bug atau kesalahan yang Anda laporkan cepat diperbaiki oleh pengembang?")
-add_slider("Apakah perubahan versi aplikasi tidak menimbulkan masalah baru?")
-add_slider("Apakah saran atau masukan pengguna sering diakomodasi oleh pengembang?")
-add_slider("Apakah catatan pembaruan (changelog) mudah ditemukan dan dipahami?")
+section("5️⃣ MAINTAINABILITY")
+add_slider("Apakah aplikasi rutin diperbarui?")
+add_slider("Apakah bug yang Anda laporkan cepat diperbaiki?")
+add_slider("Apakah perubahan versi tidak menimbulkan masalah baru?")
+add_slider("Apakah masukan pengguna sering diakomodasi?")
+add_slider("Apakah catatan pembaruan mudah ditemukan dan dipahami?")
 
-section("6️⃣ PORTABILITY (Portabilitas)")
-add_slider("Apakah aplikasi berjalan lancar di berbagai versi OS (Android, iOS)?")
-add_slider("Apakah aplikasi mudah diunduh dan diinstal di berbagai perangkat?")
-add_slider("Apakah tampilan aplikasi tetap konsisten di berbagai ukuran layar?")
-add_slider("Apakah data tetap aman dan tersinkronisasi saat Anda berganti perangkat?")
-add_slider("Apakah aplikasi mendukung berbagai bahasa sesuai kebutuhan pengguna?")
+section("6️⃣ PORTABILITY")
+add_slider("Apakah aplikasi berjalan lancar di berbagai OS?")
+add_slider("Apakah aplikasi mudah diunduh dan diinstal?")
+add_slider("Apakah tampilan aplikasi konsisten di berbagai ukuran layar?")
+add_slider("Apakah data tetap aman dan tersinkronisasi saat ganti perangkat?")
+add_slider("Apakah aplikasi mendukung berbagai bahasa?")
 
-# --- Tombol Hasil ---
+# --- Hasil ---
 if st.button("Lihat Hasil Penilaian"):
-    if not nama or not durasi or usia == 0:
-        st.warning("Mohon lengkapi semua data diri terlebih dahulu.")
+    if not nama:
+        st.warning("Mohon lengkapi nama terlebih dahulu.")
     else:
         total_skor = sum(scores)
         rata_rata = total_skor / len(scores)
@@ -127,41 +125,29 @@ if st.button("Lihat Hasil Penilaian"):
 
         st.success("Penilaian Berhasil!")
 
-        st.subheader("📋 Hasil Penilaian SQA")
-        st.write(f"**Nama Pengisi:** {nama}")
+        st.subheader("📋 Hasil Penilaian")
+        st.write(f"**Nama:** {nama}")
         st.write(f"**Usia:** {usia} tahun")
-        st.write(f"**Aplikasi Dinilai:** {aplikasi}")
-        st.write(f"**Durasi Penggunaan:** {durasi}")
-        st.write(f"**Skor Rata-rata:** {rata_rata:.2f} / 5.00")
+        st.write(f"**Aplikasi:** {aplikasi}")
+        st.write(f"**Durasi Penggunaan:** {durasi} bulan")
+        st.write(f"**Skor Rata-rata:** {rata_rata:.2f}")
         st.write(f"**Status Kelayakan:** {status}")
         st.write(f"**Rekomendasi:** {rekomendasi}")
 
-        st.markdown("---")
-        st.subheader("📊 Rincian Jawaban dan Skor")
-        for i in range(len(questions)):
-            st.write(f"{i+1}. {questions[i]} — Skor: {scores[i]}")
-
         aspek = ["Functionality", "Reliability", "Usability", "Efficiency", "Maintainability", "Portability"]
-        skor_aspek = [
-            sum(scores[0:5]) / 5,
-            sum(scores[5:10]) / 5,
-            sum(scores[10:15]) / 5,
-            sum(scores[15:20]) / 5,
-            sum(scores[20:25]) / 5,
-            sum(scores[25:30]) / 5,
-        ]
-        df = pd.DataFrame({"Aspek": aspek, "Skor": skor_aspek})
+        skor_aspek = [sum(scores[i*5:(i+1)*5]) / 5 for i in range(6)]
 
-        fig = px.bar(df, x="Aspek", y="Skor", color="Skor", title="Grafik Penilaian SQA", range_y=[0, 5])
-        st.plotly_chart(fig)
+        # --- Grafik Matplotlib ---
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.bar(aspek, skor_aspek, color='skyblue')
+        ax.set_ylim(0, 5)
+        ax.set_title("Grafik Penilaian SQA")
+        buf = BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        img_base64 = base64.b64encode(buf.read()).decode()
 
-        import plotly.io as pio
-        
-        # Konversi fig ke PNG base64 secara langsung (tanpa menyimpan file)
-        img_bytes = pio.to_image(fig, format="png")
-        img_base64 = base64.b64encode(img_bytes).decode("utf-8")
-
-        # Siapkan HTML untuk PDF
+        # --- Buat HTML ---
         html_detail = "".join([f"<p>{i+1}. {q} — Skor: {s}</p>" for i, (q, s) in enumerate(zip(questions, scores))])
         html_content = f"""
         <html>
@@ -169,54 +155,49 @@ if st.button("Lihat Hasil Penilaian"):
         <meta charset="UTF-8">
         <style>
             body {{ font-family: Arial, sans-serif; padding: 20px; }}
-            h1, h2 {{ text-align: center; color: #333; }}
-            .info {{ margin-bottom: 20px; }}
-            .grafik {{ text-align: center; margin-top: 20px; }}
+            h1, h2 {{ text-align: center; }}
+            .info p {{ line-height: 1.6; }}
         </style>
         </head>
         <body>
         <h1>Hasil Penilaian SQA - ISO 9126</h1>
 
-        <h2>Informasi Pengisi</h2>
+        <h2>Informasi Responden</h2>
         <div class="info">
             <p><strong>Nama:</strong> {nama}</p>
             <p><strong>Usia:</strong> {usia} tahun</p>
             <p><strong>Aplikasi:</strong> {aplikasi}</p>
-            <p><strong>Durasi Penggunaan:</strong
-               </div>
+            <p><strong>Durasi:</strong> {durasi} bulan</p>
+        </div>
 
-        <h2>Hasil Penilaian</h2>
+        <h2>Rangkuman</h2>
         <div class="info">
             <p><strong>Skor Rata-rata:</strong> {rata_rata:.2f}</p>
             <p><strong>Status:</strong> {status}</p>
             <p><strong>Rekomendasi:</strong> {rekomendasi}</p>
         </div>
 
-        <h2>Rincian Jawaban</h2>
-        <div class="info">
-            {html_detail}
-        </div>
-
         <h2>Grafik</h2>
-        <div class="grafik">
+        <div style="text-align:center;">
             <img src="data:image/png;base64,{img_base64}" width="500"/>
         </div>
+
+        <h2>Rincian Jawaban</h2>
+        <div class="info">{html_detail}</div>
         </body>
         </html>
         """
-        # Fungsi untuk konversi HTML ke PDF (xhtml2pdf)
+
+        # --- Fungsi PDF ---
         def convert_html_to_pdf(source_html):
-            output = BytesIO()
-            pisa_status = pisa.CreatePDF(source_html, dest=output)
-            return output if not pisa_status.err else None
+            result = BytesIO()
+            pisa_status = pisa.CreatePDF(source_html, dest=result)
+            return result.getvalue() if not pisa_status.err else None
 
-        pdf_output = convert_html_to_pdf(html_content)
-
-        if pdf_output:
-            b64_pdf = base64.b64encode(pdf_output.getvalue()).decode("utf-8")
-            safe_name = re.sub(r'\W+', '_', nama)
-            filename = f"Hasil_SQA_{aplikasi}_{safe_name}.pdf"
-            download_link = f'<a href="data:application/octet-stream;base64,{b64_pdf}" download="{filename}">📥 Download Hasil Penilaian PDF</a>'
+        pdf_bytes = convert_html_to_pdf(html_content)
+        if pdf_bytes:
+            b64_pdf = base64.b64encode(pdf_bytes).decode()
+            download_link = f'<a href="data:application/pdf;base64,{b64_pdf}" download="Hasil_SQA_{nama}.pdf">📥 Download Hasil Penilaian (PDF)</a>'
             st.markdown(download_link, unsafe_allow_html=True)
         else:
-            st.error("Gagal membuat PDF. Coba lagi nanti.")
+            st.error("❌ Gagal membuat PDF.")
