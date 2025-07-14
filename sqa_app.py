@@ -201,3 +201,31 @@ if st.button("Lihat Hasil Penilaian"):
             st.markdown(download_link, unsafe_allow_html=True)
         else:
             st.error("❌ Gagal membuat PDF.")
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px 40px;  /* margin atas bawah 20px, kiri kanan 40px */
+        line-height: 1.2;    /* spasi antar baris rapat */
+        font-size: 12pt;
+    }
+    h1, h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .info, .detail {
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+    p {
+        margin: 5px 0;
+    }
+    .grafik {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+
