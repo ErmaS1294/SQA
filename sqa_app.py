@@ -3,14 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 import base64
-import pdfkit
-import platform
-
-# Konfigurasi wkhtmltopdf sesuai OS
-if platform.system() == "Windows":
-    config = pdfkit.configuration(wkhtmltopdf=r"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-else:
-    config = pdfkit.configuration(wkhtmltopdf="/usr/local/bin/wkhtmltopdf")
+from weasyprint import HTML
 
 # --- CSS Tampilan ---
 st.markdown("""
@@ -56,7 +49,7 @@ with col4:
 
 st.markdown("---")
 
-# --- Pertanyaan SQA ---
+# --- Fungsi dan Data Penilaian ---
 def section(title):
     st.markdown(f'<h2>{title}</h2>', unsafe_allow_html=True)
 
@@ -69,49 +62,50 @@ def add_slider(label):
     scores.append(score)
     return score
 
+# --- Kategori Pertanyaan ---
 section("1️⃣ FUNCTIONALITY (Fungsionalitas)")
-f1 = add_slider("Apakah fitur-fitur aplikasi sesuai dengan kebutuhan Anda sehari-hari?")
-f2 = add_slider("Apakah fungsi utama aplikasi berjalan dengan benar tanpa error?")
-f3 = add_slider("Apakah aplikasi memiliki fitur keamanan yang memadai (login, OTP, enkripsi)?")
-f4 = add_slider("Apakah integrasi antar fitur (pembayaran, notifikasi, chat) berjalan dengan baik?")
-f5 = add_slider("Apakah aplikasi memberikan informasi atau output yang akurat?")
+add_slider("Apakah fitur-fitur aplikasi sesuai dengan kebutuhan Anda sehari-hari?")
+add_slider("Apakah fungsi utama aplikasi berjalan dengan benar tanpa error?")
+add_slider("Apakah aplikasi memiliki fitur keamanan yang memadai (login, OTP, enkripsi)?")
+add_slider("Apakah integrasi antar fitur (pembayaran, notifikasi, chat) berjalan dengan baik?")
+add_slider("Apakah aplikasi memberikan informasi atau output yang akurat?")
 
 section("2️⃣ RELIABILITY (Keandalan)")
-r1 = add_slider("Apakah aplikasi jarang mengalami error, hang, atau crash?")
-r2 = add_slider("Apakah aplikasi tetap stabil digunakan dalam waktu lama?")
-r3 = add_slider("Apakah aplikasi tetap berfungsi baik saat beban tinggi (misalnya saat promo besar)?")
-r4 = add_slider("Apakah aplikasi cepat pulih jika terjadi gangguan sistem?")
-r5 = add_slider("Apakah data pengguna tetap aman saat terjadi gangguan?")
+add_slider("Apakah aplikasi jarang mengalami error, hang, atau crash?")
+add_slider("Apakah aplikasi tetap stabil digunakan dalam waktu lama?")
+add_slider("Apakah aplikasi tetap berfungsi baik saat beban tinggi (misalnya saat promo besar)?")
+add_slider("Apakah aplikasi cepat pulih jika terjadi gangguan sistem?")
+add_slider("Apakah data pengguna tetap aman saat terjadi gangguan?")
 
 section("3️⃣ USABILITY (Kemudahan Penggunaan)")
-u1 = add_slider("Apakah tampilan antarmuka aplikasi mudah dipahami oleh pengguna baru?")
-u2 = add_slider("Apakah navigasi menu jelas, konsisten, dan tidak membingungkan?")
-u3 = add_slider("Apakah ukuran font, warna, ikon mudah dibaca di berbagai kondisi?")
-u4 = add_slider("Apakah Anda merasa nyaman menggunakan aplikasi dalam waktu lama?")
-u5 = add_slider("Apakah aplikasi menyediakan panduan/pusat bantuan jika pengguna mengalami kesulitan?")
+add_slider("Apakah tampilan antarmuka aplikasi mudah dipahami oleh pengguna baru?")
+add_slider("Apakah navigasi menu jelas, konsisten, dan tidak membingungkan?")
+add_slider("Apakah ukuran font, warna, ikon mudah dibaca di berbagai kondisi?")
+add_slider("Apakah Anda merasa nyaman menggunakan aplikasi dalam waktu lama?")
+add_slider("Apakah aplikasi menyediakan panduan/pusat bantuan jika pengguna mengalami kesulitan?")
 
 section("4️⃣ EFFICIENCY (Efisiensi Kinerja)")
-e1 = add_slider("Apakah aplikasi cepat dibuka dan tidak lambat saat digunakan?")
-e2 = add_slider("Apakah konsumsi baterai aplikasi relatif hemat?")
-e3 = add_slider("Apakah aplikasi tidak terlalu banyak menggunakan kuota data internet?")
-e4 = add_slider("Apakah aplikasi tetap berjalan baik di perangkat dengan spesifikasi rendah?")
-e5 = add_slider("Apakah respon aplikasi tetap cepat meski digunakan bersama aplikasi lain?")
+add_slider("Apakah aplikasi cepat dibuka dan tidak lambat saat digunakan?")
+add_slider("Apakah konsumsi baterai aplikasi relatif hemat?")
+add_slider("Apakah aplikasi tidak terlalu banyak menggunakan kuota data internet?")
+add_slider("Apakah aplikasi tetap berjalan baik di perangkat dengan spesifikasi rendah?")
+add_slider("Apakah respon aplikasi tetap cepat meski digunakan bersama aplikasi lain?")
 
 section("5️⃣ MAINTAINABILITY (Pemeliharaan)")
-m1 = add_slider("Apakah aplikasi rutin diperbarui untuk memperbaiki bug atau menambah fitur baru?")
-m2 = add_slider("Apakah bug atau kesalahan yang Anda laporkan cepat diperbaiki oleh pengembang?")
-m3 = add_slider("Apakah perubahan versi aplikasi tidak menimbulkan masalah baru?")
-m4 = add_slider("Apakah saran atau masukan pengguna sering diakomodasi oleh pengembang?")
-m5 = add_slider("Apakah catatan pembaruan (changelog) mudah ditemukan dan dipahami?")
+add_slider("Apakah aplikasi rutin diperbarui untuk memperbaiki bug atau menambah fitur baru?")
+add_slider("Apakah bug atau kesalahan yang Anda laporkan cepat diperbaiki oleh pengembang?")
+add_slider("Apakah perubahan versi aplikasi tidak menimbulkan masalah baru?")
+add_slider("Apakah saran atau masukan pengguna sering diakomodasi oleh pengembang?")
+add_slider("Apakah catatan pembaruan (changelog) mudah ditemukan dan dipahami?")
 
 section("6️⃣ PORTABILITY (Portabilitas)")
-p1 = add_slider("Apakah aplikasi berjalan lancar di berbagai versi OS (Android, iOS)?")
-p2 = add_slider("Apakah aplikasi mudah diunduh dan diinstal di berbagai perangkat?")
-p3 = add_slider("Apakah tampilan aplikasi tetap konsisten di berbagai ukuran layar?")
-p4 = add_slider("Apakah data tetap aman dan tersinkronisasi saat Anda berganti perangkat?")
-p5 = add_slider("Apakah aplikasi mendukung berbagai bahasa sesuai kebutuhan pengguna?")
+add_slider("Apakah aplikasi berjalan lancar di berbagai versi OS (Android, iOS)?")
+add_slider("Apakah aplikasi mudah diunduh dan diinstal di berbagai perangkat?")
+add_slider("Apakah tampilan aplikasi tetap konsisten di berbagai ukuran layar?")
+add_slider("Apakah data tetap aman dan tersinkronisasi saat Anda berganti perangkat?")
+add_slider("Apakah aplikasi mendukung berbagai bahasa sesuai kebutuhan pengguna?")
 
-# --- Tombol Hasil ---
+# --- Proses & Hasil Penilaian ---
 if st.button("Lihat Hasil Penilaian"):
     if not nama or not durasi:
         st.warning("Mohon lengkapi semua data diri terlebih dahulu.")
@@ -156,7 +150,7 @@ if st.button("Lihat Hasil Penilaian"):
         ]
         df = pd.DataFrame({"Aspek": aspek, "Skor": skor_aspek})
 
-        fig = px.bar(df, x="Aspek", y="Skor", color="Skor", title="Grafik Penilaian SQA", range_y=[0,5])
+        fig = px.bar(df, x="Aspek", y="Skor", color="Skor", title="Grafik Penilaian SQA", range_y=[0, 5])
         st.plotly_chart(fig)
 
         pio.write_image(fig, "grafik_sqa.png")
@@ -168,7 +162,7 @@ if st.button("Lihat Hasil Penilaian"):
         html_content = f"""
         <html>
         <head>
-        <meta charset=\"UTF-8\">
+        <meta charset="UTF-8">
         <style>
             body {{ font-family: Arial, sans-serif; }}
             h1, h2 {{ text-align: center; color: #333; }}
@@ -207,11 +201,13 @@ if st.button("Lihat Hasil Penilaian"):
         </html>
         """
 
+        # Simpan ke HTML & konversi ke PDF
         with open("hasil_sqa.html", "w", encoding="utf-8") as f:
             f.write(html_content)
 
-        pdfkit.from_file("hasil_sqa.html", "Hasil_SQA.pdf", configuration=config)
+        HTML("hasil_sqa.html").write_pdf("Hasil_SQA.pdf")
 
+        # Tampilkan tombol download PDF
         with open("Hasil_SQA.pdf", "rb") as f:
             pdf_bytes = f.read()
         b64_pdf = base64.b64encode(pdf_bytes).decode()
