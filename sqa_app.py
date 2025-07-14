@@ -155,10 +155,11 @@ if st.button("Lihat Hasil Penilaian"):
         fig = px.bar(df, x="Aspek", y="Skor", color="Skor", title="Grafik Penilaian SQA", range_y=[0, 5])
         st.plotly_chart(fig)
 
-        # Simpan grafik ke base64
-        pio.write_image(fig, "grafik_sqa.png")
-        with open("grafik_sqa.png", "rb") as img_file:
-            img_base64 = base64.b64encode(img_file.read()).decode()
+        import plotly.io as pio
+        
+        # Konversi fig ke PNG base64 secara langsung (tanpa menyimpan file)
+        img_bytes = pio.to_image(fig, format="png")
+        img_base64 = base64.b64encode(img_bytes).decode("utf-8")
 
         # Siapkan HTML untuk PDF
         html_detail = "".join([f"<p>{i+1}. {q} — Skor: {s}</p>" for i, (q, s) in enumerate(zip(questions, scores))])
